@@ -5,10 +5,10 @@ path: '/api/hospitals'
 
 const { Router } = require("express");
 const { check } = require('express-validator');
-const { getHospitals, 
-        addHospitals,
-        updateHospitals,
-        deleteHospitals } = require("../controllers/hospitalsController");
+const { getHospitals,
+    addHospitals,
+    updateHospitals,
+    deleteHospitals } = require("../controllers/hospitalsController");
 
 const { fieldValid } = require('../middlewares/field-validation')
 
@@ -20,7 +20,7 @@ router.get('/', getHospitals);
 
 router.post('/',
     [
-        JWTvalid, 
+        JWTvalid,
         check('name', "Institution's name is required").not().isEmpty(),
         fieldValid
     ], //middleware para validar campos de UserScheme en el nuevo usuario
@@ -29,13 +29,17 @@ router.post('/',
 );
 
 router.put('/:id',
-[],
-updateHospitals
+    [
+        JWTvalid,
+        check('name', "Institution's name is required").not().isEmpty(),
+        fieldValid
+    ],
+    updateHospitals
 );
 
-router.delete('/:id', 
-   
-    
-deleteHospitals)
+router.delete('/:id',
+    JWTvalid,
+
+    deleteHospitals)
 
 module.exports = router;

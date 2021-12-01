@@ -24,12 +24,20 @@ router.post('/',
 );
 
 router.put('/:id',
-    [],
+    [
+        JWTvalid,
+        check('name', " Doctor's name is required").not().isEmpty(),
+        check('hospital', "Institution's id must be a valid one").isMongoId(),
+        fieldValid
+    ],
     updateDoctors
 );
 
 router.delete('/:id',
 
+        JWTvalid,
+
+   
 
     deleteDoctors)
 

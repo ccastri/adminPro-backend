@@ -41,17 +41,71 @@ const addDoctors = async(req, res = response) =>{
         msg:'addDoctors'
     });
 }
-const updateDoctors = (req, res = response) =>{
-    res.json({
-        ok:true,
-        msg:'updateDoctors'
-    });
+const updateDoctors = async(req, res = response) =>{
+
+
+    const id = req.params.id;
+    const uid = req.uid; 
+    try {
+
+
+        const doctor = await Doctor.findById(id);
+        if (!doctor) {
+            return res.status(404).json({
+                ok: false,
+                msg: "Doctor's id is not found"
+            });
+
+        }
+
+        const doctorChanges = {
+            ...req.body,
+            user:uid
+        }
+        const updatedDoctors = await Doctor.findByIdAndUpdate(id, doctorChanges, {new: true})
+
+        res.json({
+            ok: true,
+            doctor: updatedDoctors
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: "talk with support"
+        });
+    }
 }
-const deleteDoctors = (req, res = response) =>{
-    res.json({
-        ok:true,
-        msg:'deleteDoctors'
-    });
+const deleteDoctors = async(req, res = response) =>{
+    const id = req.params.id;
+
+    try {
+
+
+        const doctor = await Doctor.findById(id);
+        if (!doctor) {
+            return res.status(404).json({
+                ok: false,
+                msg: "Doctor's id is not found"
+            });
+
+        }
+
+ 
+        const deletedDoctors = await Doctor.findByIdAndDelete(id);
+
+        res.json({
+            ok: true,
+            msg: `${doctor.name} has been deleted`,
+            doctor: deletedDoctors
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: "talk with support"
+        });
+    }
 }
 
 
