@@ -36,7 +36,7 @@ const uploadFile = (req, res = response) => {
 
     // console.log(shortname);
     //extension validation
-    const validExt = ['png', 'jpg', 'jpeg', 'gif', 'dcm'];
+    const validExt = ['png', 'jpg', 'jpeg', 'gif', 'nii', 'zip'];
     if (!validExt.includes(fileExt)) {
         return res.status(400).json({
             ok: false,
@@ -76,14 +76,14 @@ const returnImg = (req, res = response) => {
     const type = req.params.type
     const photo = req.params.photo
 
-    const pathImg = path.join(__dirname, `../uploads/${ type }/${ photo }`)
+    const pathImg = path.join(__dirname, `../uploads/${type}/${photo}`)
 
- 
-    
+
+
     // default image
-    if (fs.existsSync(pathImg)){
+    if (fs.existsSync(pathImg)) {
         res.sendFile(pathImg)
-    }else{
+    } else {
         const pathImg = path.join(__dirname, `../uploads/image-not.png`)
         res.sendFile(pathImg)
     }
