@@ -35,12 +35,12 @@ const getDocsCollection = async (req, res = response) => {
     switch (tabla) {
         case 'doctors':
             data = await Doctor.find({ name: regex })  //nombre es igual al parametro de busqueda?                        
-                               .populate('user', 'name img')
-                               .populate('hospital', 'name img');
+                .populate('user', 'name img')
+                .populate('hospital', 'name img');
             break;
         case 'hospitals':
             data = await Hospital.find({ name: regex })  //nombre es igual al parametro de busqueda?              
-                                 .populate('user', 'name img')
+                .populate('user', 'name img')
             break;
         case 'users':
 
@@ -59,12 +59,12 @@ const getDocsCollection = async (req, res = response) => {
     res.json({
 
         ok: true,
-        resultados: data
+        results: data
     })
 
 
 }
- 
+
 module.exports = {
     getAll,
     getDocsCollection

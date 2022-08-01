@@ -26,9 +26,10 @@ const addHospitals = async (req, res = response) => {
 
     try {
         const hospitalDB = await hospital.save();
-        res.status(500).json({
+        res.status(200).json({
             ok: true,
             hospital: hospitalDB
+
         })
     } catch (error) {
         res.status(500).json({
@@ -42,9 +43,9 @@ const addHospitals = async (req, res = response) => {
         msg: 'addHospitals'
     });
 }
-const updateHospitals = async(req, res = response) => {
+const updateHospitals = async (req, res = response) => {
     const id = req.params.id;
-    const uid = req.uid; 
+    const uid = req.uid;
     try {
 
 
@@ -59,9 +60,9 @@ const updateHospitals = async(req, res = response) => {
 
         const hospitalChanges = {
             ...req.body,
-            user:uid
+            user: uid
         }
-        const updatedHospital = await Hospital.findByIdAndUpdate(id, hospitalChanges, {new: true})
+        const updatedHospital = await Hospital.findByIdAndUpdate(id, hospitalChanges, { new: true })
 
         res.json({
             ok: true,
@@ -76,7 +77,7 @@ const updateHospitals = async(req, res = response) => {
     }
 
 }
-const deleteHospitals = async(req, res = response) => {
+const deleteHospitals = async (req, res = response) => {
 
     const id = req.params.id;
     // const uid = req.uid;  se necesita el id del hospital pero no del user

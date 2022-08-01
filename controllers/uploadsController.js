@@ -29,8 +29,8 @@ const uploadFile = (req, res = response) => {
     }
 
     //Procesar la imagen...
-    const file = req.files.image;
-
+    const file = req.files.img;
+    console.log(req.files.img);
     const shortname = file.name.split('.');
     const fileExt = shortname[shortname.length - 1] //last possition in array
 
@@ -75,6 +75,7 @@ const uploadFile = (req, res = response) => {
 const returnImg = (req, res = response) => {
     const type = req.params.type
     const photo = req.params.photo
+    // console.log(req.params);
 
     const pathImg = path.join(__dirname, `../uploads/${type}/${photo}`)
 
@@ -84,7 +85,7 @@ const returnImg = (req, res = response) => {
     if (fs.existsSync(pathImg)) {
         res.sendFile(pathImg)
     } else {
-        const pathImg = path.join(__dirname, `../uploads/image-not.png`)
+        const pathImg = path.join(__dirname, `../uploads/no-image.jpg`)
         res.sendFile(pathImg)
     }
 }

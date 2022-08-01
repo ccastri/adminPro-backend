@@ -44,17 +44,17 @@ const login = async (req, res = response) => {
 }
 const loginGoogle = async (req, res = response) => {
     const googleToken = req.body.token;
-
     try {
-        const { name, email, photo } = await googleVerify(googleToken);
+        const { name, email, picture } = await googleVerify(googleToken);
 
         const userDB = await User.findOne({ email });
+        let user;
         if (!userDB) {
             user = new User({
                 name: name,
                 email,
+                img: picture,
                 password: '@@@',
-                img: photo,
                 google: true
             });
 
@@ -82,20 +82,24 @@ const loginGoogle = async (req, res = response) => {
     });
 }
 
-const renewToken = async (req, res = response) =>{
+const renewToken = async (req, res = response) => {
 
     const uid = req.uid;
 
     // Token generation
-    const token = await generateJWT(uid.id);
-    
+    const token = await generateJWT(uid);
+
+    // 
+    const user = await User.findById(uid)
+
     res.json({
         ok: true,
-        token
+        token,
+        user
     });
 }
-    module.exports = {
-        login,
-        loginGoogle,
-        renewToken
-    }
+module.exports = {
+    login,
+    loginGoogle,
+    renewToken
+}

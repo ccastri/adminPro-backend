@@ -12,13 +12,13 @@ const getUsers = async (req, res) => {
     const [user, total] = await Promise.all([ //Me va a permitir optimizar el codigo porque ejecuta 2 promesas al tiempo
 
         User
-        .find({}, 'name email role img google')
-        .skip(since)
-        .limit(5),
-        
+            .find({}, 'name email role img google')
+            .skip(since)
+            .limit(5),
+
         User.countDocuments() //Para totalizar los registros
     ]);
-                        
+
     res.json({
 
         ok: true,
@@ -27,7 +27,7 @@ const getUsers = async (req, res) => {
     });
 }
 const addUsers = async (req, res = response) => {
-    const { email, password, name } = req.body;
+    const { email, password, photo } = req.body;
 
     // const err = validationResult (req); //err generados en el middleware
     // console.log(req)
@@ -40,7 +40,7 @@ const addUsers = async (req, res = response) => {
         if (emailExists) {
             return res.status(400).json({
                 ok: false,
-                msg: 'Email is already registereddddd'
+                msg: 'Email is already registered'
             });
         }
         const user = new User(req.body);
@@ -50,7 +50,7 @@ const addUsers = async (req, res = response) => {
         // Guardar usuario
         await user.save(); //esperar a la promesa
 
-        const token =await generateJWT(user.id);    
+        const token = await generateJWT(user.id);
         res.json({
 
             ok: true,
@@ -69,41 +69,50 @@ const addUsers = async (req, res = response) => {
 }
 
 const updateUser = async (req, res = response) => {
-    
+
     //TODO: Validar token y comprobar si el usuario es correcto
-    
+
     const uid = req.params.id;
     try {
-        
+
         const userDB = await User.findById(uid);
-        if (!userDB ){
+        if (!userDB) {
             return res.status(404).json({
                 ok: false,
                 msg: "There's no user matching with that id"
             });
-            
+
         }
         //Updates
-        const {password, google, email, ...fields} = req.body;
+        const { password, google, email, ...fields } = req.body;
 
         if (userDB.email !== email) {
-            const emailExist = await User.findOne({email});
-            if (emailExist ) {
-                return res.status(400). json ({
+            const emailExist = await User.findOne({ email });
+            if (emailExist) {
+                return res.status(400).json({
                     ok: false,
                     msg: 'Email already exists'
                 });
             }
 
         }
-        fields.email = email;
+        if (!User.google) {
+
+            fields.email = email;
+        } else if (userDB.email !== email) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Google users cannot change their email'
+            })
+        }
         // delete fields.password;
         // delete fields.google;
 
-        const updatedUser = await User.findByIdAndUpdate( uid, fields, {new: true});
+        const updatedUser = await User.findByIdAndUpdate(uid, fields, { new: true });
 
 
 
+        console.log(updatedUser);
         res.json({
             ok: true,
             user: updatedUser
@@ -114,31 +123,31 @@ const updateUser = async (req, res = response) => {
         console.log(error);
         res.status(500).json({
             ok: false,
-            msg: 'Unspecting error'
+            msg: 'Unexpected error'
         })
     }
 }
 
-const deleteUser = async (req, res=response) =>{
+const deleteUser = async (req, res = response) => {
     const uid = req.params.id;
     try {
 
         const userDB = await User.findById(uid);
-        if (!userDB ){
+        if (!userDB) {
             return res.status(404).json({
                 ok: false,
                 msg: "There's no user matching with that id"
             });
         }
-            // Si el usuario existe se borra (lo recomendable es desactivarlo)
+        // Si el usuario existe se borra (lo recomendable es desactivarlo)
         await User.findOneAndDelete(uid);
- 
+
         res.json({
 
             ok: true,
             msg: 'user has been deleted'
         })
-        
+
     } catch (error) {
         console.log(object);
         res.status(500).json({

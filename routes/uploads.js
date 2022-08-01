@@ -11,6 +11,6 @@ const router = Router();
 router.use(fileUpload()); //era app.use pero como no esta importado y el router funciona igual, usamos router para llamar el middleware
 
 router.put('/:type/:id', JWTvalid, uploadFile);
-router.get('/:type/:photo', returnImg );
+router.get('/:type/:photo', returnImg);
 
 module.exports = router;

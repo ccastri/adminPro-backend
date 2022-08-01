@@ -1,26 +1,47 @@
 const { response } = require('express');
-const  Doctor = require('../models/doctors');
+const Doctor = require('../models/doctors');
 
 
-const getDoctors = async(req, res = response) =>{
-    
+const getDoctors = async (req, res = response) => {
+
     const doctors = await Doctor.find()
-                                    .populate('user', 'name img' ) //datos del usuario que creó el hospital
-                                    .populate('hospital', 'name img' ) //datos del usuario que creó el hospital
-    
+        .populate('user', 'name img') //datos del usuario que creó el hospital
+        .populate('hospital', 'name img') //datos del usuario que creó el hospital
+
     res.json({
-        ok:true,
+        ok: true,
         doctors
     });
 }
+const getDoctor = async (req, res = response) => {
+    const id = req.params.id;
 
-const addDoctors = async(req, res = response) =>{
+    try {
+
+        const doctor = await Doctor.findById(id)
+            .populate('user', 'name img') //datos del usuario que creó el hospital
+            .populate('hospital', 'name img') //datos del usuario que creó el hospital
+        console.log(doctor)
+        res.json({
+            ok: true,
+            doctor
+        });
+    } catch (error) {
+        console.log(error)
+        res.json({
+            ok: false,
+            msg: "Talk with admin"
+        })
+    }
+}
+
+const addDoctors = async (req, res = response) => {
     const uid = req.uid;
-    const doctor = new Doctor( { 
-        
+    const doctor = new Doctor({
+
         user: uid,
         ...req.body
-     } ); 
+    });
 
     try {
         const doctorDB = await doctor.save();
@@ -35,17 +56,17 @@ const addDoctors = async(req, res = response) =>{
             msg: 'Talk with admin'
         })
     }
-   
+
     res.json({
-        ok:true,
-        msg:'addDoctors'
+        ok: true,
+        msg: 'addDoctors'
     });
 }
-const updateDoctors = async(req, res = response) =>{
+const updateDoctors = async (req, res = response) => {
 
 
     const id = req.params.id;
-    const uid = req.uid; 
+    const uid = req.uid;
     try {
 
 
@@ -60,9 +81,9 @@ const updateDoctors = async(req, res = response) =>{
 
         const doctorChanges = {
             ...req.body,
-            user:uid
+            user: uid
         }
-        const updatedDoctors = await Doctor.findByIdAndUpdate(id, doctorChanges, {new: true})
+        const updatedDoctors = await Doctor.findByIdAndUpdate(id, doctorChanges, { new: true })
 
         res.json({
             ok: true,
@@ -76,7 +97,7 @@ const updateDoctors = async(req, res = response) =>{
         });
     }
 }
-const deleteDoctors = async(req, res = response) =>{
+const deleteDoctors = async (req, res = response) => {
     const id = req.params.id;
 
     try {
@@ -91,7 +112,7 @@ const deleteDoctors = async(req, res = response) =>{
 
         }
 
- 
+
         const deletedDoctors = await Doctor.findByIdAndDelete(id);
 
         res.json({
@@ -112,6 +133,7 @@ const deleteDoctors = async(req, res = response) =>{
 
 module.exports = {
     getDoctors,
+    getDoctor,
     addDoctors,
     updateDoctors,
     deleteDoctors

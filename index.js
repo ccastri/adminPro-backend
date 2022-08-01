@@ -5,6 +5,12 @@ const cors = require('cors')
 const { dbConnection } = require('./DB/config');
 //Creating expressApp server:
 const app = express();
+// try {
+
+
+// } catch {
+//     console.log(err);
+// }
 // CORS settings (middleware)
 app.use(cors());
 
