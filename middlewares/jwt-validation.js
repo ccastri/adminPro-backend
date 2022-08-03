@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-
+const User = require("../models/users")
 
 
 const JWTvalid = (req, res, next) => {
@@ -28,9 +28,63 @@ const JWTvalid = (req, res, next) => {
             msg: "Invalid token"
         })
     }
-
 }
 
+const validADMIN_ROLE = async (req, res, next) => {
+    const uid = req.uid
+    try {
+        const userDB = await User.findById(uid)
+        if (!userDB) {
+            return res.status(404).json({ ok: false, msg: "User not found" })
+        }
+        if (userDB.role !== 'ADMIN_ROLE') {
+            return res.status(403).json({
+                ok: false,
+
+                msg: "Admin authentication is required"
+            })
+        }
+        next();
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Internal server error'
+        })
+    }
+}
+const validADMIN_ROLE_o_SameUser = async (req, res, next) => {
+    const uid = req.uid
+    const id = req.params.id
+
+    try {
+        const userDB = await User.findById(uid)
+        if (!userDB) {
+            return res.status(404).json({ ok: false, msg: "User not found" })
+        }
+
+        if (userDB.role === 'ADMIN_ROLE' || uid === id) {
+            next();
+        } else {
+
+            return res.status(403).json({
+                ok: false,
+                msg: "Admin authentication is required"
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Internal server error'
+        })
+    }
+}
+
+
+
 module.exports = {
-    JWTvalid
+    JWTvalid,
+    validADMIN_ROLE,
+    validADMIN_ROLE_o_SameUser
 }

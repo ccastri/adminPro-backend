@@ -1,9 +1,11 @@
 const { response } = require('express');
 const bcrypt = require('bcryptjs');
-
+// const { getMenuFront } = require('../helpers/menu')
 const User = require('../models/users');
 const { generateJWT } = require('../helpers/jwt');
 const { googleVerify } = require('../helpers/googleVerify');
+const { getMenuFront } = require('../helpers/menu');
+
 
 const login = async (req, res = response) => {
 
@@ -13,6 +15,7 @@ const login = async (req, res = response) => {
 
         // E mail's verify
         const userDB = await User.findOne({ email });
+        console.log(userDB)
         if (!userDB) {
             return res.status(404).json({
 
@@ -29,16 +32,18 @@ const login = async (req, res = response) => {
         }
         // generate web token -JWT
         const token = await generateJWT(userDB._id);
+        console.log(userDB.role);
         res.json({
 
             ok: true,
-            token
+            token,
+            menu: getMenuFront(userDB.role)
         })
     } catch (error) {
         console.log(error);
         res.status(500).json({
             ok: false,
-            msg: 'Talk with mannager'
+            msg: 'Talk with management'
         })
     }
 }
@@ -49,12 +54,13 @@ const loginGoogle = async (req, res = response) => {
 
         const userDB = await User.findOne({ email });
         let user;
+        //if user didn´t exists:
         if (!userDB) {
             user = new User({
                 name: name,
                 email,
-                img: picture,
                 password: '@@@',
+                img: picture,
                 google: true
             });
 
@@ -66,11 +72,12 @@ const loginGoogle = async (req, res = response) => {
         }
         // Save user in DB
         await user.save();
-
+        // Generate JWT
         const token = await generateJWT(user.id);
         res.json({
             ok: true,
-            token: token
+            token: token,
+            menu: getMenuFront(user.role)
         });
     } catch (error) {
         console.log(error);
@@ -95,7 +102,8 @@ const renewToken = async (req, res = response) => {
     res.json({
         ok: true,
         token,
-        user
+        user,
+        menu: getMenuFront(user.role)
     });
 }
 module.exports = {
