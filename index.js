@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors')
+const path = require('path');
 
 const { dbConnection } = require('./DB/config');
 //Creating expressApp server:
@@ -31,6 +32,11 @@ app.use('/api/doctors', require('./routes/doctorRoutes'));
 app.use('/api/login', require('./routes/auth'));
 app.use('/api/all', require('./routes/searchingRoutes'));
 app.use('/api/uploads', require('./routes/uploads'));
+
+// The last
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'public/index.html'))
+})
 
 //Run/listening app on port 3000:
 app.listen(process.env.PORT || 5000, () => {
