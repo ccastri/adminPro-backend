@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 // nocaller__id
 // Bio2160cc
+
+// mongodb + srv://nocaller__id:<password>@cluster0.czruq.mongodb.net/
 const dbConnection = async () => {
     try {
 
